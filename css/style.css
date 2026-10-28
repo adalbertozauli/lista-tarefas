@@ -540,6 +540,85 @@ mark {
 .cat-saude    { --cor-cat: var(--cat-saude); }
 .cat-compras  { --cor-cat: var(--cat-compras); }
 
+/* ----- Botão editar (mesmo formato do excluir) ----- */
+.botao-editar {
+  background: none;
+  border: none;
+  color: var(--cor-texto-suave);
+  font-size: 1rem;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all var(--transicao);
+}
+
+.tarefa:hover .botao-editar {
+  opacity: 0.9;
+}
+
+.botao-editar:hover {
+  opacity: 1;
+  color: var(--cor-destaque);
+  background: color-mix(in srgb, var(--cor-destaque) 12%, transparent);
+}
+
+/* ----- Tarefa em modo de edição ----- */
+.tarefa.editando,
+.tarefa.editando:hover {
+  border-color: var(--cor-destaque);
+  background: var(--cor-superficie-2);
+  box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.15);
+  opacity: 1;
+}
+
+.tarefa-edicao {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.campo-edicao {
+  flex: 1 1 220px;
+  min-width: 0;
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-pequeno);
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color var(--transicao);
+}
+
+.campo-edicao:focus {
+  border-color: var(--cor-destaque);
+}
+
+.edicao-botoes {
+  display: flex;
+  gap: 8px;
+}
+
+.botao-salvar {
+  background: var(--cor-destaque);
+  color: var(--cor-fundo);
+  border: none;
+  border-radius: var(--raio-pequeno);
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transicao);
+}
+
+.botao-salvar:hover {
+  background: var(--cor-destaque-hover);
+}
+
 /* ----- Botão excluir ----- */
 .botao-excluir {
   background: none;
@@ -802,6 +881,7 @@ mark {
   .filtros,
   .rodape,
   .botao-excluir,
+  .botao-editar,
   .progresso,
   .data-hoje {
     display: none;
@@ -885,7 +965,8 @@ mark {
     display: none;
   }
 
-  .botao-excluir {
+  .botao-excluir,
+  .botao-editar {
     opacity: 0.8;
   }
 
@@ -988,13 +1069,13 @@ mark {
     scroll-snap-align: start;
   }
 
-  /* ----- Tarefa: círculo | texto + etiqueta embaixo | excluir ----- */
+  /* ----- Tarefa: círculo | texto + etiqueta embaixo | editar | excluir ----- */
   .tarefa {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr auto auto;
     grid-template-areas:
-      "check texto excluir"
-      "check etiqueta excluir";
+      "check texto editar excluir"
+      "check etiqueta editar excluir";
     column-gap: 12px;
     row-gap: 4px;
     padding: 12px 6px 12px 12px;
@@ -1042,6 +1123,40 @@ mark {
     width: 44px;
     height: 44px;
     font-size: 1.1rem;
+  }
+
+  .botao-editar {
+    grid-area: editar;
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+    margin-right: -12px; /* encosta no ✕ sem diminuir a área de toque */
+  }
+
+  /* Modo de edição: texto em cima; categoria + botões embaixo */
+  .tarefa.editando {
+    display: flex;
+    padding: 12px;
+  }
+
+  .campo-edicao {
+    flex-basis: 100%;
+    font-size: 16px; /* evita o zoom automático do iPhone */
+    padding: 10px 12px;
+  }
+
+  .tarefa-edicao .campo-select {
+    flex: 1 1 120px;
+    min-height: 44px;
+  }
+
+  .edicao-botoes {
+    flex: 1 1 auto;
+  }
+
+  .edicao-botoes button {
+    flex: 1;
+    min-height: 44px;
   }
 
   /* ----- Painel de importação: botões empilhados ----- */
