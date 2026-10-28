@@ -1,0 +1,128 @@
+# CLAUDE.md
+
+Este arquivo orienta o Claude ao trabalhar neste projeto. Leia-o antes de qualquer alteração.
+
+## Visão geral do projeto
+
+**Lista de Tarefas** — um aplicativo web simples para criar, concluir, editar e excluir tarefas.
+
+- Feito com **HTML, CSS e JavaScript puro** (vanilla), sem frameworks nem bibliotecas.
+- Roda direto no navegador, sem etapa de build e sem servidor obrigatório.
+- Os dados ficam salvos no navegador via `localStorage`.
+
+## Sobre o desenvolvedor
+
+- O autor está **começando** em desenvolvimento web (vem do Swift/Xcode).
+- Explique as mudanças de forma didática, em português, e quando útil compare com conceitos de Swift (ex.: `let`/`const`, arrays, closures/arrow functions, structs/objetos).
+- Prefira código claro e legível a código "esperto" ou curto demais.
+- Faça mudanças pequenas e incrementais, explicando o porquê de cada uma.
+
+## Estrutura de arquivos
+
+```
+lista_tarefas/
+├── index.html      # Estrutura da página
+├── css/
+│   └── style.css   # Estilos visuais
+├── js/
+│   └── app.js      # Lógica do aplicativo
+├── icons/          # favicon.svg, apple-touch-icon.png, icone-192.png, icone-512.png
+├── manifest.webmanifest  # "Adicionar à tela inicial" no celular
+├── .nojekyll       # Diz ao GitHub Pages para servir os arquivos como estão
+├── README.md       # Apresentação do projeto no GitHub
+└── CLAUDE.md       # Este arquivo
+```
+
+Publicado com **GitHub Pages**. Use sempre caminhos relativos (`css/style.css`, nunca `/css/style.css`),
+pois o site fica numa subpasta (`usuario.github.io/lista-tarefas/`). Nomes de arquivo diferenciam
+maiúsculas de minúsculas na web.
+
+Não crie novos arquivos ou pastas sem necessidade. Se for preciso, explique o motivo.
+
+## Como executar
+
+1. Abra o arquivo `index.html` diretamente no navegador (duplo clique), **ou**
+2. Use a extensão **Live Server** do VS Code para recarregar automaticamente ao salvar.
+
+Não há dependências para instalar (sem `npm install`).
+
+## Funcionalidades esperadas
+
+- [x] Adicionar uma nova tarefa (campo de texto + botão ou tecla Enter)
+- [x] Categorias com etiquetas coloridas (Pessoal, Trabalho, Estudos, Saúde, Compras)
+- [x] Marcar/desmarcar tarefa como concluída (com animação)
+- [ ] Editar o texto de uma tarefa
+- [x] Excluir uma tarefa
+- [x] Limpar Concluídas de uma vez (com contador no botão e opção "Desfazer" por 6 s)
+- [x] Filtrar por categoria
+- [ ] Filtrar: todas / pendentes / concluídas
+- [x] Busca por texto (ignora acentos e maiúsculas; atalho `/`)
+- [x] Contador de tarefas pendentes + barra de progresso
+- [x] Exportar a lista em PDF (via janela de impressão)
+- [x] Exportar Backup (.json) e Importar Backup (juntar ou substituir, com "Desfazer")
+- [x] Salvar e carregar as tarefas do `localStorage` (chave `lista-tarefas`, com validação dos dados)
+- [x] Lembrar filtro, busca e última categoria usada (chave `lista-tarefas-preferencias`)
+- [x] Sincronizar entre abas abertas (evento `storage`)
+
+## Convenções de código
+
+### Geral
+- Idioma: **nomes de variáveis e funções em português**, em camelCase (ex.: `adicionarTarefa`, `listaDeTarefas`).
+- Comentários em português, explicando o *porquê*, não o óbvio.
+- Indentação de 2 espaços. Use aspas duplas em HTML e aspas simples em JavaScript.
+
+### HTML
+- HTML5 semântico: `<header>`, `<main>`, `<form>`, `<ul>`, `<li>`, `<button>`.
+- Use `lang="pt-BR"` e `<meta charset="UTF-8">`.
+- Todo campo de formulário deve ter `<label>` (acessibilidade).
+- Carregue o script no final do `<body>` ou com `defer`.
+- Não escreva CSS ou JavaScript inline no HTML.
+
+### CSS
+- Use variáveis CSS em `:root` para cores, espaçamentos e fontes.
+- Nomes de classes em kebab-case e descritivos (ex.: `.tarefa-concluida`, `.botao-excluir`).
+- Layout com Flexbox ou Grid. Design responsivo, pensado primeiro para celular (mobile-first).
+- Evite `!important` e seletores por `id` para estilização.
+- Celular: botões e áreas de toque com pelo menos 44×44px; campos com `font-size: 16px` (evita zoom no iPhone);
+  nada pode causar rolagem lateral. Breakpoints: `600px` (celular) e `360px` (telas bem estreitas);
+  `@media (hover: none)` para aparelhos de toque.
+
+### JavaScript
+- Use `const` por padrão; `let` só quando o valor muda. **Nunca use `var`.**
+- Use `===` e `!==` (comparação estrita).
+- Prefira arrow functions e template literals (`` `Olá, ${nome}` ``).
+- Use `addEventListener` — nada de `onclick` no HTML.
+- **Não use `innerHTML` com texto digitado pelo usuário** (risco de XSS). Use `textContent` e `document.createElement`.
+- Mantenha o estado em um array de objetos e renderize a tela a partir dele:
+
+```js
+// Modelo de uma tarefa
+const tarefa = {
+  id: Date.now(),        // identificador único
+  texto: 'Comprar pão',
+  concluida: false
+};
+```
+
+- Fluxo recomendado: **alterar o estado → salvar no `localStorage` → renderizar a lista**.
+- Envolva leituras do `localStorage` em `try/catch` e use `JSON.parse`/`JSON.stringify`.
+- Funções pequenas, cada uma com uma única responsabilidade.
+
+## O que NÃO fazer
+
+- Não adicionar frameworks (React, Vue, jQuery, Bootstrap, Tailwind etc.) sem pedido explícito.
+- Não introduzir ferramentas de build (Webpack, Vite, npm) nem TypeScript.
+- Não reescrever arquivos inteiros quando uma alteração pontual resolve.
+- Não remover funcionalidades existentes sem avisar.
+
+## Testes e verificação
+
+- Não há testes automatizados. Após cada mudança, descreva como testar manualmente no navegador.
+- Verifique o **Console** do navegador (F12 → Console) para erros.
+- Teste em tela pequena (modo responsivo do DevTools) e grande.
+- Confirme que as tarefas continuam lá após recarregar a página (F5).
+
+## Git (opcional)
+
+- Mensagens de commit em português, curtas e no imperativo (ex.: `Adiciona filtro de tarefas concluídas`).
+- Um commit por funcionalidade ou correção.

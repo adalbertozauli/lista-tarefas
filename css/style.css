@@ -1,0 +1,1116 @@
+/* ===== Variáveis (cores, espaçamentos, fontes) ===== */
+:root {
+  color-scheme: dark;
+
+  /* Fundo e superfícies: cinzas levemente azulados */
+  --cor-fundo: #0b0d12;
+  --cor-superficie: #141821;
+  --cor-superficie-2: #1b2030;
+  --cor-borda: #252b3b;
+  --cor-borda-forte: #343c52;
+
+  /* Texto */
+  --cor-texto: #e6e9f2;
+  --cor-texto-suave: #8a93a8;
+
+  /* Destaques */
+  --cor-destaque: #6c8cff;
+  --cor-destaque-hover: #8aa3ff;
+  --cor-sucesso: #3ddc97;
+  --cor-perigo: #ff5d73;
+
+  /* Cores das categorias */
+  --cat-pessoal: #4fc3f7;
+  --cat-trabalho: #ffb74d;
+  --cat-estudos: #b49cff;
+  --cat-saude: #5ee6a8;
+  --cat-compras: #ff8a80;
+
+  --raio: 14px;
+  --raio-pequeno: 10px;
+  --espaco: 16px;
+  --fonte: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sombra: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  --transicao: 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ===== Base ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--fonte);
+  background-color: var(--cor-fundo);
+  /* Brilho suave no topo da página */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(108, 140, 255, 0.16), transparent 70%);
+  background-repeat: no-repeat;
+  color: var(--cor-texto);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  -webkit-text-size-adjust: 100%; /* impede o celular de aumentar o texto sozinho */
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+  touch-action: manipulation;          /* sem atraso nem zoom no toque duplo */
+  -webkit-tap-highlight-color: transparent; /* tira o "flash" azul ao tocar */
+}
+
+/* Esconde visualmente, mas mantém para leitores de tela */
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ===== Layout ===== */
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  /* max(...) respeita o entalhe (notch) do iPhone deitado */
+  padding-block: 48px calc(48px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(var(--espaco), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--espaco), env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.data-hoje {
+  color: var(--cor-texto-suave);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cabecalho h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+/* ===== Aviso de erro ao salvar ===== */
+.aviso {
+  background: color-mix(in srgb, var(--cor-perigo) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cor-perigo) 40%, transparent);
+  color: var(--cor-perigo);
+  border-radius: var(--raio-pequeno);
+  padding: 10px 14px;
+  font-size: 0.875rem;
+}
+
+/* ===== Barra de busca ===== */
+.busca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  padding: 4px 8px 4px 16px;
+  transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+.busca:focus-within {
+  border-color: var(--cor-destaque);
+  box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.15);
+}
+
+.busca-icone {
+  color: var(--cor-texto-suave);
+  flex-shrink: 0;
+}
+
+.campo-busca {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  padding: 8px 0;
+  outline: none;
+}
+
+.campo-busca::placeholder {
+  color: var(--cor-texto-suave);
+}
+
+/* Esconde o "x" nativo do campo de busca (usamos o nosso) */
+.campo-busca::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.busca-atalho {
+  font-family: inherit;
+  font-size: 0.75rem;
+  color: var(--cor-texto-suave);
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;
+  padding: 1px 7px;
+  margin-right: 6px;
+}
+
+.botao-limpar-busca {
+  background: var(--cor-superficie-2);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  transition: color var(--transicao);
+}
+
+.botao-limpar-busca:hover {
+  color: var(--cor-texto);
+}
+
+/* Trecho encontrado pela busca */
+mark {
+  background: color-mix(in srgb, var(--cor-destaque) 35%, transparent);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 1px;
+}
+
+/* ===== Resumo (contador + progresso) ===== */
+.resumo {
+  background: linear-gradient(145deg, var(--cor-superficie-2), var(--cor-superficie));
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 20px;
+  box-shadow: var(--sombra);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.resumo-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.resumo-contador {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.resumo-valor {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--cor-destaque);
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+}
+
+/* Quando o número muda, ele "pula" levemente */
+.resumo-valor.pulsar {
+  animation: pulsar 0.4s var(--transicao);
+}
+
+@keyframes pulsar {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+.resumo-rotulo {
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.resumo-progresso-texto {
+  color: var(--cor-texto-suave);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.progresso {
+  height: 6px;
+  background: var(--cor-fundo);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progresso-barra {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--cor-destaque), var(--cor-sucesso));
+  border-radius: inherit;
+  transition: width 0.6s var(--transicao);
+}
+
+/* ===== Formulário ===== */
+.formulario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 8px;
+  transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+/* Destaca o formulário quando o campo está em foco */
+.formulario:focus-within {
+  border-color: var(--cor-destaque);
+  box-shadow: 0 0 0 4px rgba(108, 140, 255, 0.15);
+}
+
+.campo-texto {
+  flex: 1 1 220px;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  padding: 10px 12px;
+  outline: none;
+}
+
+.campo-texto::placeholder {
+  color: var(--cor-texto-suave);
+}
+
+.campo-select {
+  background: var(--cor-superficie-2);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-pequeno);
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.botao-adicionar {
+  background: var(--cor-destaque);
+  border: none;
+  border-radius: var(--raio-pequeno);
+  padding: 8px 18px;
+  font-weight: 700;
+  color: #0b0d12;
+  cursor: pointer;
+  transition: background var(--transicao), transform var(--transicao);
+}
+
+.botao-adicionar:hover {
+  background: var(--cor-destaque-hover);
+}
+
+.botao-adicionar:active {
+  transform: scale(0.96);
+}
+
+/* ===== Filtros ===== */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filtro {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  transition: all var(--transicao);
+}
+
+.filtro:hover {
+  color: var(--cor-texto);
+  border-color: var(--cor-borda-forte);
+}
+
+.filtro-ativo,
+.filtro-ativo:hover {
+  background: var(--cor-texto);
+  border-color: var(--cor-texto);
+  color: var(--cor-fundo);
+}
+
+/* ===== Lista ===== */
+.lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tarefa {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 12px 14px;
+  transition: border-color var(--transicao), background var(--transicao), opacity var(--transicao);
+}
+
+.tarefa:hover {
+  border-color: var(--cor-borda-forte);
+  background: var(--cor-superficie-2);
+}
+
+/* Tarefa concluída fica mais apagada */
+.tarefa-concluida {
+  opacity: 0.6;
+}
+
+.tarefa-concluida:hover {
+  opacity: 0.85;
+}
+
+/* Animação de entrada (só na tarefa recém-adicionada) */
+.tarefa.entrando {
+  animation: aparecer 0.35s var(--transicao);
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Animação de saída (ao excluir) */
+.tarefa.saindo {
+  animation: sair 0.25s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes sair {
+  to { opacity: 0; transform: translateX(24px); }
+}
+
+/* ----- Checkbox personalizado ----- */
+.tarefa-check {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: 2px solid var(--cor-borda-forte);
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition: background var(--transicao), border-color var(--transicao);
+}
+
+.tarefa-check:hover {
+  border-color: var(--cor-sucesso);
+}
+
+.tarefa-check::after {
+  content: '✓';
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--cor-fundo);
+  transform: scale(0);
+}
+
+.tarefa-check:checked {
+  background: var(--cor-sucesso);
+  border-color: var(--cor-sucesso);
+}
+
+.tarefa-check:checked::after {
+  transform: scale(1);
+}
+
+/* ----- Texto com risco ----- */
+.tarefa-texto {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+/* O risco é um "fundo" fino que cresce da esquerda para a direita */
+.tarefa-texto span {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 55%;
+  background-size: 0 2px;
+  transition: color var(--transicao);
+}
+
+.tarefa-concluida .tarefa-texto span {
+  color: var(--cor-texto-suave);
+  background-size: 100% 2px;
+}
+
+/* ----- Animação de conclusão (só na tarefa que acabou de ser marcada) ----- */
+.tarefa.concluindo {
+  animation: brilho-conclusao 0.7s ease;
+}
+
+.tarefa.concluindo .tarefa-check {
+  animation: pulo-check 0.45s var(--transicao);
+}
+
+.tarefa.concluindo .tarefa-check::after {
+  animation: aparecer-check 0.3s 0.1s var(--transicao) both;
+}
+
+.tarefa.concluindo .tarefa-texto span {
+  animation: riscar 0.45s 0.1s ease-out both;
+}
+
+@keyframes pulo-check {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.5); }
+  40%  { transform: scale(1.25); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 10px rgba(61, 220, 151, 0); }
+}
+
+@keyframes aparecer-check {
+  from { transform: scale(0) rotate(-45deg); }
+  to   { transform: scale(1) rotate(0); }
+}
+
+@keyframes riscar {
+  from { background-size: 0 2px; }
+  to   { background-size: 100% 2px; }
+}
+
+@keyframes brilho-conclusao {
+  0%   { opacity: 1; border-color: var(--cor-sucesso); background: rgba(61, 220, 151, 0.08); }
+  60%  { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* ----- Etiqueta de categoria ----- */
+.etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cor-cat) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cor-cat) 30%, transparent);
+  color: var(--cor-cat);
+  white-space: nowrap;
+}
+
+/* Bolinha colorida antes do nome da categoria */
+.etiqueta::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cor-cat);
+}
+
+/* Bolinha colorida nos filtros */
+.ponto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cor-cat);
+}
+
+/* Cada categoria define sua cor em --cor-cat */
+.cat-pessoal  { --cor-cat: var(--cat-pessoal); }
+.cat-trabalho { --cor-cat: var(--cat-trabalho); }
+.cat-estudos  { --cor-cat: var(--cat-estudos); }
+.cat-saude    { --cor-cat: var(--cat-saude); }
+.cat-compras  { --cor-cat: var(--cat-compras); }
+
+/* ----- Botão excluir ----- */
+.botao-excluir {
+  background: none;
+  border: none;
+  color: var(--cor-texto-suave);
+  font-size: 1rem;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all var(--transicao);
+}
+
+.tarefa:hover .botao-excluir {
+  opacity: 0.9;
+}
+
+.botao-excluir:hover {
+  opacity: 1;
+  color: var(--cor-perigo);
+  background: color-mix(in srgb, var(--cor-perigo) 12%, transparent);
+}
+
+/* ===== Estado vazio e rodapé ===== */
+.vazio {
+  text-align: center;
+  color: var(--cor-texto-suave);
+  padding: 40px 16px;
+  border: 1px dashed var(--cor-borda);
+  border-radius: var(--raio);
+}
+
+.rodape {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.rodape-grupo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Botões auxiliares reutilizáveis */
+.botao-secundario,
+.botao-perigo,
+.botao-texto {
+  border-radius: var(--raio-pequeno);
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transicao), border-color var(--transicao), background var(--transicao);
+}
+
+.botao-secundario {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto);
+}
+
+.botao-secundario:hover {
+  border-color: var(--cor-destaque);
+}
+
+.botao-perigo {
+  background: color-mix(in srgb, var(--cor-perigo) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cor-perigo) 45%, transparent);
+  color: var(--cor-perigo);
+}
+
+.botao-perigo:hover {
+  background: color-mix(in srgb, var(--cor-perigo) 22%, transparent);
+}
+
+.botao-texto {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--cor-texto-suave);
+}
+
+.botao-texto:hover {
+  color: var(--cor-texto);
+}
+
+/* ===== Painel de confirmação da importação ===== */
+.painel-importar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--cor-superficie-2);
+  border: 1px solid var(--cor-destaque);
+  border-radius: var(--raio);
+  padding: 16px;
+  animation: aparecer 0.3s var(--transicao);
+}
+
+.painel-importar[hidden] {
+  display: none;
+}
+
+.painel-importar-titulo {
+  font-weight: 700;
+}
+
+.painel-importar-texto {
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+}
+
+.painel-importar-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.botao-limpar {
+  background: none;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-pequeno);
+  padding: 6px 14px;
+  color: var(--cor-texto-suave);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: color var(--transicao), border-color var(--transicao), background var(--transicao);
+}
+
+.botao-limpar:hover {
+  color: var(--cor-perigo);
+  border-color: color-mix(in srgb, var(--cor-perigo) 50%, transparent);
+  background: color-mix(in srgb, var(--cor-perigo) 10%, transparent);
+}
+
+/* ===== Aviso "Desfazer" (toast) ===== */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 32px);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--cor-texto);
+  color: var(--cor-fundo);
+  border-radius: var(--raio-pequeno);
+  padding: 10px 10px 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: var(--sombra);
+  animation: toast-entrar 0.3s var(--transicao);
+  z-index: 10;
+}
+
+/* Sem isso, o "display: flex" acima ignoraria o atributo hidden */
+.toast[hidden] {
+  display: none;
+}
+
+@keyframes toast-entrar {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.toast-botao {
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.toast-botao:hover {
+  background: var(--cor-superficie-2);
+}
+
+/* Toast de erro (ex.: arquivo de backup inválido) */
+.toast-erro {
+  background: var(--cor-perigo);
+  color: var(--cor-fundo); /* texto escuro: contraste de 5.4:1 (o branco dava só 3:1) */
+}
+
+.botao-exportar {
+  background: var(--cor-superficie-2);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-pequeno);
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transicao);
+}
+
+.botao-exportar:hover {
+  border-color: var(--cor-destaque);
+}
+
+.info-impressao {
+  display: none;
+}
+
+/* ===== Foco visível (acessibilidade) ===== */
+:focus-visible {
+  outline: 2px solid var(--cor-destaque);
+  outline-offset: 2px;
+}
+
+/* ===== Menos movimento para quem prefere ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== Impressão / PDF =====
+   O PDF é gerado pela janela de impressão do navegador.
+   Aqui trocamos o tema escuro por um fundo branco, que fica melhor no papel. */
+@media print {
+  @page {
+    margin: 18mm;
+  }
+
+  :root {
+    color-scheme: light;
+    background: #fff;
+  }
+
+  body {
+    background: #fff;
+    color: #111;
+  }
+
+  .container {
+    max-width: none;
+    padding: 0;
+    gap: 12px;
+  }
+
+  /* Esconde o que não faz sentido no papel */
+  .formulario,
+  .toast,
+  .painel-importar,
+  .busca,
+  .filtros,
+  .rodape,
+  .botao-excluir,
+  .progresso,
+  .data-hoje {
+    display: none;
+  }
+
+  .resumo {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .resumo-valor {
+    font-size: 1.2rem;
+    color: #111;
+  }
+
+  .resumo-rotulo,
+  .resumo-progresso-texto {
+    color: #555;
+  }
+
+  .info-impressao {
+    display: block;
+    color: #555;
+    font-size: 0.85rem;
+  }
+
+  .tarefa,
+  .tarefa-concluida {
+    background: #fff;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0;
+    padding: 10px 0;
+    opacity: 1;
+    animation: none;
+    break-inside: avoid; /* não corta uma tarefa entre duas páginas */
+  }
+
+  .tarefa-check {
+    border-color: #999;
+  }
+
+  .tarefa-check:checked {
+    background: #444;
+    border-color: #444;
+  }
+
+  .tarefa-check::after {
+    color: #fff;
+  }
+
+  .tarefa-concluida .tarefa-texto span {
+    color: #888;
+  }
+
+  mark {
+    background: none;
+  }
+
+  .etiqueta {
+    display: inline-flex;
+    background: none;
+    border: 1px solid #ccc;
+    color: #444;
+  }
+
+  /* Garante que o navegador imprima as cores de fundo do checkbox */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* ===== Telas de toque (celular e tablet) =====
+   "hover: none" = aparelho sem mouse. Lá não existe "passar o mouse por cima",
+   então tudo que só aparecia no hover precisa ficar sempre visível. */
+@media (hover: none) {
+  .busca-atalho {
+    display: none;
+  }
+
+  .botao-excluir {
+    opacity: 0.8;
+  }
+
+  /* Evita que o efeito de hover "grude" depois do toque */
+  .tarefa:hover {
+    border-color: var(--cor-borda);
+    background: var(--cor-superficie);
+  }
+
+  .tarefa-concluida:hover {
+    opacity: 0.6;
+  }
+}
+
+/* ===== Celular (até 600px de largura) ===== */
+@media (max-width: 600px) {
+  .container {
+    padding-top: calc(24px + env(safe-area-inset-top, 0px));
+    /* Espaço extra embaixo para o aviso "Desfazer" não cobrir os últimos botões */
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    gap: 16px;
+  }
+
+  .cabecalho h1 {
+    font-size: 1.7rem;
+  }
+
+  /* Campos com 16px: abaixo disso o iPhone dá zoom sozinho ao tocar */
+  .campo-texto,
+  .campo-busca,
+  .campo-select {
+    font-size: 16px;
+  }
+
+  /* ----- Busca ----- */
+  .busca {
+    padding: 4px 6px 4px 14px;
+  }
+
+  .campo-busca {
+    padding: 10px 0;
+  }
+
+  .botao-limpar-busca {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* ----- Resumo ----- */
+  .resumo {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .resumo-valor {
+    font-size: 2.2rem;
+  }
+
+  /* ----- Formulário: texto em cima; categoria + botão embaixo ----- */
+  .formulario {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 8px;
+  }
+
+  .campo-texto {
+    grid-column: 1 / -1; /* ocupa a linha inteira */
+    padding: 12px;
+  }
+
+  .campo-select,
+  .botao-adicionar {
+    min-height: 44px;
+  }
+
+  /* ----- Filtros: uma linha só, rolando para o lado com o dedo ----- */
+  .filtros {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: max(16px, env(safe-area-inset-left, 0px)); /* o "encaixe" respeita o recuo */
+    scrollbar-width: none;           /* esconde a barra de rolagem (Firefox) */
+    -webkit-overflow-scrolling: touch;
+    /* Estica até a borda da tela, mas mantém o recuo do primeiro botão */
+    margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+    padding-inline: max(16px, env(safe-area-inset-left, 0px));
+    padding-block: 2px;
+    /* Esmaece as pontas para indicar que dá para rolar */
+    mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%);
+  }
+
+  .filtros::-webkit-scrollbar {
+    display: none;                   /* esconde a barra de rolagem (Chrome/Safari) */
+  }
+
+  .filtro {
+    flex-shrink: 0;
+    min-height: 40px;
+    padding: 8px 16px;
+    scroll-snap-align: start;
+  }
+
+  /* ----- Tarefa: círculo | texto + etiqueta embaixo | excluir ----- */
+  .tarefa {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "check texto excluir"
+      "check etiqueta excluir";
+    column-gap: 12px;
+    row-gap: 4px;
+    padding: 12px 6px 12px 12px;
+  }
+
+  .tarefa-check {
+    grid-area: check;
+    width: 28px;
+    height: 28px;
+    /* Área de toque invisível maior que o círculo */
+    margin: -8px;
+    border-width: 8px;
+    border-color: transparent;
+    box-shadow: inset 0 0 0 2px var(--cor-borda-forte);
+    background-clip: content-box;
+    box-sizing: content-box;
+  }
+
+  .tarefa-check:hover,
+  .tarefa-check:checked {
+    border-color: transparent;
+  }
+
+  .tarefa-check:checked {
+    /* "background" no estado marcado reseta o clip; repetimos aqui
+       para o verde ficar só no círculo, não na área de toque */
+    background-clip: content-box;
+    box-shadow: inset 0 0 0 14px var(--cor-sucesso);
+  }
+
+  .tarefa-texto {
+    grid-area: texto;
+    font-size: 1rem;
+  }
+
+  .etiqueta {
+    grid-area: etiqueta;
+    justify-self: start;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+  }
+
+  .botao-excluir {
+    grid-area: excluir;
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+
+  /* ----- Painel de importação: botões empilhados ----- */
+  .painel-importar-botoes {
+    flex-direction: column;
+  }
+
+  .painel-importar-botoes button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  /* ----- Rodapé: botões em grade, largura total ----- */
+  .rodape {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rodape-grupo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rodape-grupo button {
+    min-height: 44px;
+    padding-inline: 8px;
+    white-space: nowrap;
+  }
+
+  /* Se o "Limpar" estiver escondido, o PDF ocupa a linha inteira */
+  .botao-limpar[hidden] + .botao-exportar {
+    grid-column: 1 / -1;
+  }
+
+  /* ----- Aviso "Desfazer": largura total, acima da barra do iPhone ----- */
+  .toast {
+    left: max(16px, env(safe-area-inset-left, 0px));
+    right: max(16px, env(safe-area-inset-right, 0px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: auto;
+    max-width: none;
+    transform: none;
+    justify-content: space-between;
+    animation-name: toast-entrar-celular;
+  }
+
+  .toast-botao {
+    min-height: 40px;
+  }
+
+  @keyframes toast-entrar-celular {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* ===== Telas bem estreitas (ex.: iPhone SE, 320px) ===== */
+@media (max-width: 360px) {
+  .cabecalho h1 {
+    font-size: 1.5rem;
+  }
+
+  .resumo-topo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .formulario {
+    grid-template-columns: 1fr;
+  }
+}
