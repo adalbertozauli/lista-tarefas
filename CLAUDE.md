@@ -51,7 +51,7 @@ Não há dependências para instalar (sem `npm install`).
 - [x] Adicionar uma nova tarefa (campo de texto + botão ou tecla Enter)
 - [x] Categorias com etiquetas coloridas (Pessoal, Trabalho, Estudos, Saúde, Compras)
 - [x] Marcar/desmarcar tarefa como concluída (com animação)
-- [ ] Editar o texto de uma tarefa
+- [x] Editar tarefa: texto e categoria (duplo clique no texto ou botão ✎; Enter salva, Esc cancela, clicar fora salva; com "Desfazer")
 - [x] Excluir uma tarefa
 - [x] Limpar Concluídas de uma vez (com contador no botão e opção "Desfazer" por 6 s)
 - [x] Filtrar por categoria
@@ -121,6 +121,22 @@ const tarefa = {
 - Verifique o **Console** do navegador (F12 → Console) para erros.
 - Teste em tela pequena (modo responsivo do DevTools) e grande.
 - Confirme que as tarefas continuam lá após recarregar a página (F5).
+
+## Publicação (GitHub Pages)
+
+- Repositório: https://github.com/adalbertozauli/lista-tarefas (branch `main`, raiz `/`)
+- Site no ar: https://adalbertozauli.github.io/lista-tarefas/
+- Pasta local do projeto: `C:\temp\claude_desktop\lista_tarefas`
+
+Como subir alterações (não há conector do GitHub nem `git` disponível para o Claude):
+1. Alterar, testar e salvar na pasta local.
+2. Só subir quando o autor pedir ("pode subir" / "altere e suba").
+3. No navegador logado no GitHub: repositório → **Add file → Upload files**, enviando apenas
+   os arquivos alterados, cada um na pasta certa (`css/`, `js/`, `icons/`).
+4. Mostrar a lista de arquivos e a mensagem do commit antes de clicar em **Commit changes**
+   (exceto se o pedido já autorizou subir).
+5. Esperar 1–2 min o deploy e abrir o site para conferir.
+- Nunca enviar a pasta `Claude outputs`. Se aparecer tela de login, parar e pedir ao autor.
 
 ## Git (opcional)
 
