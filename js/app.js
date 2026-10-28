@@ -64,6 +64,7 @@ let ultimasRemovidas = [];
 let temporizadorToast = null;
 let limpezaEmAndamento = false; // evita clique duplo durante a animação
 let acaoDesfazer = null;        // o que o botão "Desfazer" do aviso deve fazer
+let idEmEdicao = null;          // id da tarefa que está sendo editada (ou null)
 
 // Tarefas lidas do arquivo, esperando você escolher "Juntar" ou "Substituir"
 let tarefasParaImportar = [];
@@ -588,6 +589,11 @@ function renderizarLista() {
 }
 
 function criarItemTarefa(tarefa) {
+  // A tarefa que está sendo editada é desenhada como um formulário
+  if (tarefa.id === idEmEdicao) {
+    return criarItemEmEdicao(tarefa);
+  }
+
   const item = document.createElement('li');
   item.className = 'tarefa';
   if (tarefa.concluida) {
@@ -615,6 +621,8 @@ function criarItemTarefa(tarefa) {
   const textoInterno = document.createElement('span');
   preencherComDestaque(textoInterno, tarefa.texto);
   texto.append(textoInterno);
+  texto.title = 'Clique duas vezes para editar';
+  texto.addEventListener('dblclick', () => iniciarEdicao(tarefa.id));
 
   // Etiqueta de categoria
   const categoria = CATEGORIAS.find((c) => c.id === tarefa.categoria);
@@ -629,13 +637,206 @@ function criarItemTarefa(tarefa) {
   botaoExcluir.textContent = '✕';
   botaoExcluir.setAttribute('aria-label', `Excluir "${tarefa.texto}"`);
   botaoExcluir.addEventListener('click', () => {
-    // Primeiro anima a saída, depois remove de verdade
+    // Primeiro anima a saída (0,25 s), depois remove de verdade.
+    // Usamos um tempo fixo em vez de esperar o fim da animação: se a lista for
+    // redesenhada no meio, a exclusão acontece do mesmo jeito.
     item.classList.add('saindo');
-    item.addEventListener('animationend', () => excluirTarefa(tarefa.id), { once: true });
+    setTimeout(() => excluirTarefa(tarefa.id), 250);
   });
 
-  item.append(check, texto, etiqueta, botaoExcluir);
+  // Botão editar (no celular é o jeito principal, já que não há duplo clique confiável)
+  const botaoEditar = document.createElement('button');
+  botaoEditar.type = 'button';
+  botaoEditar.className = 'botao-editar';
+  botaoEditar.textContent = '✎';
+  botaoEditar.setAttribute('aria-label', `Editar "${tarefa.texto}"`);
+  botaoEditar.addEventListener('click', () => iniciarEdicao(tarefa.id));
+
+  item.append(check, texto, etiqueta, botaoEditar, botaoExcluir);
   return item;
+}
+
+// ===== Edição de tarefa =====
+
+// Desenha a tarefa como um pequeno formulário: texto + categoria + Salvar/Cancelar
+function criarItemEmEdicao(tarefa) {
+  const item = document.createElement('li');
+  item.className = 'tarefa editando';
+
+  const formularioEdicao = document.createElement('form');
+  formularioEdicao.className = 'tarefa-edicao';
+
+  // Campo de texto
+  const rotuloTexto = document.createElement('label');
+  rotuloTexto.className = 'visualmente-oculto';
+  rotuloTexto.htmlFor = 'campo-edicao';
+  rotuloTexto.textContent = 'Texto da tarefa';
+
+  const campoEdicao = document.createElement('input');
+  campoEdicao.type = 'text';
+  campoEdicao.id = 'campo-edicao';
+  campoEdicao.className = 'campo-edicao';
+  campoEdicao.value = tarefa.texto;
+  campoEdicao.maxLength = 120;
+  campoEdicao.autocomplete = 'off';
+
+  // Categoria
+  const rotuloCategoria = document.createElement('label');
+  rotuloCategoria.className = 'visualmente-oculto';
+  rotuloCategoria.htmlFor = 'campo-edicao-categoria';
+  rotuloCategoria.textContent = 'Categoria da tarefa';
+
+  const campoCategoriaEdicao = document.createElement('select');
+  campoCategoriaEdicao.id = 'campo-edicao-categoria';
+  campoCategoriaEdicao.className = 'campo-select';
+  CATEGORIAS.forEach((categoria) => {
+    const opcao = document.createElement('option');
+    opcao.value = categoria.id;
+    opcao.textContent = categoria.nome;
+    campoCategoriaEdicao.append(opcao);
+  });
+  campoCategoriaEdicao.value = tarefa.categoria;
+
+  // Botões
+  const botoes = document.createElement('div');
+  botoes.className = 'edicao-botoes';
+
+  const botaoSalvar = document.createElement('button');
+  botaoSalvar.type = 'submit'; // Enter no campo de texto também "clica" aqui
+  botaoSalvar.className = 'botao-salvar';
+  botaoSalvar.textContent = 'Salvar';
+
+  const botaoCancelar = document.createElement('button');
+  botaoCancelar.type = 'button';
+  botaoCancelar.className = 'botao-texto';
+  botaoCancelar.textContent = 'Cancelar';
+
+  botoes.append(botaoSalvar, botaoCancelar);
+  formularioEdicao.append(rotuloTexto, campoEdicao, rotuloCategoria, campoCategoriaEdicao, botoes);
+  item.append(formularioEdicao);
+
+  const salvar = (opcoes) =>
+    salvarEdicao(tarefa.id, campoEdicao.value, campoCategoriaEdicao.value, opcoes);
+
+  // Enter (ou o botão Salvar) salva
+  formularioEdicao.addEventListener('submit', (evento) => {
+    evento.preventDefault();
+    salvar();
+  });
+
+  botaoCancelar.addEventListener('click', cancelarEdicao);
+
+  // No Safari (iPhone/Mac) botões não recebem foco ao clicar. Sem isto, o campo
+  // perderia o foco antes do clique e o "clicar fora salva" agiria no lugar do Cancelar.
+  [botaoSalvar, botaoCancelar].forEach((botao) => {
+    botao.addEventListener('mousedown', (evento) => evento.preventDefault());
+  });
+
+  // Esc cancela
+  formularioEdicao.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape') {
+      evento.preventDefault();
+      cancelarEdicao();
+    }
+  });
+
+  // Clicar fora do formulário também salva.
+  // "relatedTarget" é o elemento que vai receber o foco a seguir.
+  formularioEdicao.addEventListener('focusout', (evento) => {
+    const destino = evento.relatedTarget;
+    if (formularioEdicao.contains(destino)) {
+      return; // o foco só mudou de um campo para outro dentro da edição
+    }
+
+    // Se o foco foi para outro botão ou campo (ex.: o ✎ de outra tarefa),
+    // salva os dados agora, mas só redesenha depois, para o clique nele não se perder.
+    const foiParaOutroControle = Boolean(destino && destino.closest('button, input, select, a'));
+    salvar({ adiarDesenho: foiParaOutroControle, item: item });
+  });
+
+  return item;
+}
+
+function iniciarEdicao(id) {
+  idEmEdicao = id;
+  renderizar(); // completo: se a edição anterior mudou a categoria, os filtros se atualizam
+
+  // Coloca o cursor no campo, com o texto selecionado
+  const campo = document.getElementById('campo-edicao');
+  if (campo) {
+    campo.focus();
+    campo.select();
+  }
+}
+
+// opcoes.adiarDesenho: redesenha a tela um pouco depois (ver o "focusout" acima)
+function salvarEdicao(id, novoTexto, novaCategoria, opcoes = {}) {
+  // Evita salvar duas vezes (ex.: Enter e depois o "clicar fora")
+  if (idEmEdicao !== id) {
+    return;
+  }
+  idEmEdicao = null;
+
+  const desenhar = () => {
+    if (!opcoes.adiarDesenho) {
+      renderizar();
+      return;
+    }
+    // O clique no outro botão normalmente já redesenha a tela.
+    // Só se isso NÃO aconteceu (o formulário antigo ainda está na tela) redesenhamos aqui;
+    // redesenhar sempre poderia "roubar" um clique que a pessoa está fazendo.
+    setTimeout(() => {
+      if (opcoes.item && opcoes.item.isConnected) {
+        renderizar();
+      }
+    }, 300);
+  };
+
+  const tarefa = tarefas.find((t) => t.id === id);
+  const texto = novoTexto.trim().slice(0, 120);
+
+  if (!tarefa) {
+    desenhar();
+    return;
+  }
+
+  if (texto === '') {
+    desenhar();
+    mostrarAviso('A tarefa não pode ficar sem texto. Nada foi alterado.', { erro: true });
+    return;
+  }
+
+  // Nada mudou: só sai do modo de edição
+  if (texto === tarefa.texto && novaCategoria === tarefa.categoria) {
+    desenhar();
+    return;
+  }
+
+  const valoresAnteriores = { texto: tarefa.texto, categoria: tarefa.categoria };
+  tarefas = tarefas.map((t) =>
+    t.id === id ? { ...t, texto: texto, categoria: novaCategoria } : t
+  );
+  salvarTarefas();
+  desenhar();
+
+  // Avisa se a tarefa sumiu da tela por causa do filtro ou da busca
+  const continuaVisivel = obterTarefasVisiveis().some((t) => t.id === id);
+  const mensagem = continuaVisivel
+    ? 'Tarefa editada.'
+    : 'Tarefa editada (ficou oculta pelo filtro ou pela busca).';
+
+  mostrarAviso(mensagem, {
+    desfazer: () => {
+      tarefas = tarefas.map((t) => (t.id === id ? { ...t, ...valoresAnteriores } : t));
+      esconderAviso();
+      atualizar();
+    }
+  });
+}
+
+function cancelarEdicao() {
+  idEmEdicao = null;
+  renderizarLista();
 }
 
 function renderizarContador() {
