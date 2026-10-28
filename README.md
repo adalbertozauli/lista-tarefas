@@ -4,9 +4,13 @@ Aplicativo web de lista de tarefas feito com **HTML, CSS e JavaScript puro** —
 
 ## Funcionalidades
 
-- Adicionar tarefas com categoria (Pessoal, Trabalho, Estudos, Saúde, Compras)
+- Adicionar tarefas com categoria
 - Marcar como concluída, com animação
 - Editar o texto e a categoria (duplo clique ou botão ✎)
+- Reordenar arrastando pela alça ⋮⋮ (mouse ou dedo; no teclado, setas ↑ ↓)
+- Prioridade Alta, Média ou Baixa, com opção de ordenar a lista por prioridade
+- Categorias personalizadas: crie, renomeie e escolha a cor
+- Subtarefas (passos) dentro de cada tarefa, com progresso do tipo "2/3"
 - Filtrar por categoria e buscar por texto (ignora acentos; atalho `/`)
 - Contador de tarefas pendentes e barra de progresso
 - Limpar concluídas de uma vez, com opção de desfazer

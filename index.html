@@ -85,12 +85,14 @@
       >
 
       <label for="campo-categoria" class="visualmente-oculto">Categoria</label>
-      <select id="campo-categoria" class="campo-select">
-        <option value="pessoal">Pessoal</option>
-        <option value="trabalho">Trabalho</option>
-        <option value="estudos">Estudos</option>
-        <option value="saude">Saúde</option>
-        <option value="compras">Compras</option>
+      <!-- As opções são criadas pelo JavaScript (as categorias podem ser personalizadas) -->
+      <select id="campo-categoria" class="campo-select"></select>
+
+      <label for="campo-prioridade" class="visualmente-oculto">Prioridade</label>
+      <select id="campo-prioridade" class="campo-select">
+        <option value="alta">Alta</option>
+        <option value="media" selected>Média</option>
+        <option value="baixa">Baixa</option>
       </select>
 
       <button type="submit" class="botao-adicionar">
@@ -100,6 +102,42 @@
 
     <!-- Filtros por categoria (botões criados pelo JavaScript) -->
     <nav class="filtros" id="filtros" aria-label="Filtrar por categoria"></nav>
+
+    <!-- Painel para criar, renomear, mudar a cor e excluir categorias -->
+    <section class="painel-categorias" id="painel-categorias" aria-labelledby="titulo-categorias" hidden>
+      <div class="painel-categorias-topo">
+        <h2 id="titulo-categorias">Categorias</h2>
+        <button type="button" class="botao-salvar" id="fechar-categorias">Concluído</button>
+      </div>
+
+      <ul class="lista-categorias" id="lista-categorias"></ul>
+
+      <form class="nova-categoria" id="form-nova-categoria">
+        <label for="campo-nova-categoria" class="visualmente-oculto">Nome da nova categoria</label>
+        <input
+          type="text"
+          id="campo-nova-categoria"
+          class="campo-edicao"
+          placeholder="Nova categoria"
+          maxlength="20"
+          autocomplete="off"
+        >
+        <div class="paleta" id="paleta-nova-categoria" role="radiogroup" aria-label="Cor da nova categoria"></div>
+        <button type="submit" class="botao-secundario" id="botao-nova-categoria">Adicionar</button>
+      </form>
+    </section>
+
+    <!-- Escolha da ordem da lista -->
+    <div class="barra-lista">
+      <span class="barra-lista-rotulo" id="rotulo-ordenacao">Ordenar por</span>
+      <div class="segmentado" id="ordenacao" role="radiogroup" aria-labelledby="rotulo-ordenacao">
+        <button type="button" role="radio" aria-checked="true" data-ordenacao="manual">Minha ordem</button>
+        <button type="button" role="radio" aria-checked="false" data-ordenacao="prioridade">Prioridade</button>
+      </div>
+    </div>
+    <p class="dica-ordenacao" id="dica-ordenacao" hidden>
+      Ordenado por prioridade (concluídas no fim). Para arrastar, volte para "Minha ordem".
+    </p>
 
     <!-- Lista de tarefas -->
     <ul class="lista" id="lista"></ul>

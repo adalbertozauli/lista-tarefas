@@ -53,6 +53,21 @@ Não há dependências para instalar (sem `npm install`).
 - [x] Marcar/desmarcar tarefa como concluída (com animação)
 - [x] Editar tarefa: texto e categoria (duplo clique no texto ou botão ✎; Enter salva, Esc cancela, clicar fora salva; com "Desfazer")
 - [x] Excluir uma tarefa
+- [x] Reordenar arrastando pela alça ⋮⋮ (mouse e toque, com rolagem automática e "Desfazer"; setas ↑ ↓ no teclado).
+      Usa Pointer Events. Regra: durante o arraste, mover sempre o VIZINHO na página, nunca a tarefa arrastada
+      (isso faz o navegador soltar o ponteiro). Com filtro/busca, só as tarefas visíveis trocam entre si.
+- [x] Prioridade Alta/Média/Baixa (campo `prioridade`; padrão e valor para dados antigos: `media`).
+      Indicador com 3 barrinhas (só a Alta é colorida, para não confundir com as cores das categorias);
+      clique no indicador troca Baixa → Média → Alta. "Ordenar por: Minha ordem | Prioridade":
+      no modo Prioridade, pendentes primeiro (Alta → Média → Baixa), concluídas no fim, sem alça de arrastar;
+      a ordem manual em `tarefas` nunca é alterada pela ordenação (ela só vale para a exibição).
+- [x] Categorias personalizadas (botão "✎ Categorias" no fim dos filtros): criar, renomear, mudar a cor e excluir.
+      Salvas em `lista-tarefas-categorias` como `{ id, nome, cor }`; tarefas guardam só o `id` da categoria.
+      Cores só da paleta `CORES` (10 tons testados para contraste no tema escuro); cor chega ao CSS pela variável `--cor-cat`.
+      Excluir categoria com tarefas pede "mover para…". Limite: 12 categorias. Padrão: as 5 originais.
+- [x] Subtarefas ("passos"): campo `subtarefas: [{ id, texto, concluida }]` em cada tarefa (máx. 50).
+      Botão "+ Passos" / "2/3" abre a lista abaixo da tarefa; a busca também procura nos passos; o PDF imprime os passos.
+- [x] Backup inclui `categorias`. Ao juntar, categoria do backup com o mesmo nome de uma existente é unificada.
 - [x] Limpar Concluídas de uma vez (com contador no botão e opção "Desfazer" por 6 s)
 - [x] Filtrar por categoria
 - [ ] Filtrar: todas / pendentes / concluídas
